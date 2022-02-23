@@ -1,5 +1,5 @@
 # ReduceMonomsRBC
-ReduceROMsRBC is a Python package that reduces the list of monomials for sum-of-squares (SOS) optimization of reduced-order models (ROMS). The monomials are reduced by applying highest-degree cancellation and symmetry conditions derived from the structure of the ROM. This package is built for ROMs of 2D Rayleigh&ndash;Bénard convection, but can be adapted to any ROM whose general structure is known.
+ReduceMonomsRBC is a Python package that reduces the list of monomials for sum-of-squares (SOS) optimization of reduced-order models (ROMS). The monomials are reduced by applying highest-degree cancellation and symmetry conditions derived from the structure of the ROM. This package is built for ROMs of 2D Rayleigh&ndash;Bénard convection, but can be adapted to any ROM whose general structure is known.
 
 ## Features:
 - Reduce list of monomials and save list for use in SOS optimization
