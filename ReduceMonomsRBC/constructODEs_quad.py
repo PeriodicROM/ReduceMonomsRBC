@@ -51,12 +51,17 @@ def construct_psi_quad(p_modes, t_modes):
                 if newTerm != 0:
                     fQ += '[' + str(idx1+1) + ',' + str(idx2+1) + '],'
                     a += str(newTerm) + ','
-        fQ = fQ[:len(fQ)-1] + '],'
+        if a[-1] == '[':
+            a += '0*k,'
+        if fQ[-1] == ',':
+            fQ = fQ[:len(fQ)-1] + '],'
+        else:
+            fQ += '],'
         a = a[:len(a)-1] + '],'
         
     return fQ, a
 
-def construct_theta(p_modes, t_modes):
+def construct_theta_quad(p_modes, t_modes):
     """
     Construct quadratic terms on right-hand side of ODEs for psi modes
 
@@ -76,12 +81,14 @@ def construct_theta(p_modes, t_modes):
         Records coefficients of quadratic terms in nested list form.
     """    
     k = sym.Symbol('k')
+    fQ = ''
+    a = ''
 
     for mode in t_modes:
         
-        m, n= mode 
-        fQ = '['
-        a = '['
+        m,n = mode 
+        fQ += '['
+        a += '['
         for idx1,t1 in enumerate(t_modes):
             r, s = t1
             compat = [(p,q) for (p,q) in p_modes if 
@@ -110,19 +117,23 @@ def construct_theta(p_modes, t_modes):
                 coeff3= mu_2*k/d
                 newTerm = sym.simplify(coeff1*coeff3)
                 if newTerm != 0:
-                    thetaIdx =  str(idx1+1+len(p_modes))
+                    thetaIdx = str(idx1+1+len(p_modes))
                     fQ += '[' + thetaIdx + ',' + str(idx2+1) + '],'
                     a += str(newTerm) + ','
-        fQ = fQ[:len(fQ)-1] + ']'
-        a = a[:len(a)-1] + ']'
-        
-        fQ += ','
-        a += ','
-        
-    fQ = fQ[:len(fQ)-1] + '];'
-    a = a[:len(a)-1] + '];'
-    return fQ,a
+        if a[-1] == '[':
+            a += '0*k,'
+        if fQ[-1] == ',':
+            fQ = fQ[:len(fQ)-1] + '],'
+        else:
+            fQ += '],'
 
+        a = a[:len(a)-1] + '],'
+        
+    fQ = fQ[:len(fQ)-1] + ']'
+    a = a[:len(a)-1] + ']'
+    
+    return fQ, a
+ 
 def B(i,j,k):
     """
     Tensor B used in constructing ROMs. 

@@ -9,7 +9,6 @@ import numpy as np
 from scipy.linalg import null_space
 import sympy as sym
 from random import uniform
-import sys
 from os import path
 
 def partition_rec(n, d, depth=0):
@@ -279,10 +278,10 @@ def highestDegRed(DV, UDV, V_locs, V, coeffDV, tol=1e-6):
 
     Returns
     -------
-    V : TYPE
-        DESCRIPTION.
-    NA : TYPE
-        DESCRIPTION.
+    V : List
+        List of monomials of highest degree.
+    NA : List
+        Null space of A.
 
     """
     V_ind_to_del = []
@@ -332,7 +331,7 @@ def highestDegRed(DV, UDV, V_locs, V, coeffDV, tol=1e-6):
         
     return V, NA
         
-def reduceMonoms(n, d):
+def reduceMonoms(n, d, fQ_dir):
     """
     Generate all monomials of length n, degree d, and reduce monomials
     using model symmetries and highest degree cancellation. Prints monomial
@@ -344,6 +343,8 @@ def reduceMonoms(n, d):
         Number of state variables.
     d : int
         Maximum degree of auxiliary functions.
+    fQ_dir : string
+        Output directory for fQ files
 
     Returns
     -------
@@ -357,6 +358,7 @@ def reduceMonoms(n, d):
     nzero= num_zero(n)
     
     #Generate all possible monomials of length n that sum to d
+    print('Generating monomial list...')
     V = np.array(partition(n,d),int)
     V0 = []
     for i in range(d-1, 0, -1):
@@ -364,39 +366,40 @@ def reduceMonoms(n, d):
         
     V0 = np.array(V0,int)
     
-    a = []
     fQ = []
     
-    
-    dir_name = 'Matlabfiles/Hierarchy1/fQ/'
+    #Imports variables a and fQ from text files
     file_name = 'hk' + str(n) + '.txt'
     
-    #Imports variables a and fQ from text files
     #See readme for format of nested lists.
     k = sym.Symbol('k')
     
-    if path.exists(dir_name + file_name):
-    
-        data_file = open(dir_name + file_name, 'r')
-        for line in data_file:
-            exec(line)
-            data_file.close()
+    if path.exists(fQ_dir + file_name):
+        data_file = open(fQ_dir + file_name, 'r')
+        
+        line = data_file.readline()
+        fQ = eval(line[5:-1])
+        line2 = data_file.readline()
+        a = eval(line2[4:])
+
+        data_file.close()
     else:
         print('ODE data file not found.')
         return None, None, None
-    
+
     #Select random value for k since symbolic very slow
     kVal = uniform(.25, .75)
     a = [[float(term2.subs(k,kVal)) for term2 in term] for term in a]
     
     Monoms = [len(V), len(V0), len(V)+len(V0)]
-    print(Monoms)
+    
+    print('Applying symmetry reduction...')
     
     V, V0 = symmRed(V, V0, fQ, n, nzero)
     
     Monoms += [len(V), len(V0), len(V)+len(V0)]
-    print(Monoms[3:6])
     
+    print('Applying highest degree cancellation...')
     DV, V_locs, coeffDV = constructDV(V, fQ, a, n)
     
     #Sort together to preserve indices
@@ -408,7 +411,6 @@ def reduceMonoms(n, d):
     V, NA = highestDegRed(DV, UDV, V_locs, V, coeffDV, tol=1e-6)
     
     Monoms += [len(V), len(V0), len(V)+len(V0)]
-    print(Monoms[6:9])
         
     return V, V0, Monoms
         

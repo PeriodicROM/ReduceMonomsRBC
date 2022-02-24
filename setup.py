@@ -3,13 +3,13 @@ from setuptools import setup, find_packages
 with open("README.md", "r") as readme_file:
     readme = readme_file.read()
     
-requirements = ["ipython>=6", "numpy", "sympy", "csv", "scipy"]
+requirements = ["ipython>=6", "numpy", "sympy", "scipy>=1.0"]
 
 description = ("Reduce monomial basis for SDP computations for ROM of Rayleigh–Bénard convection.")
 
 setup(
       name="ReduceMonomsRBC",
-      version="0.1",
+      version="0.2",
       author="Matt Olson",
       author_email="mlolson@umich.edu",
       description=description,
